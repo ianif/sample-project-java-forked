@@ -1,11 +1,10 @@
 package algorithms;
-
 import java.util.Vector;
 
 public class Primes {
   /**
    * Checks if a number is prime
-   *
+   * test comment
    * @param n The number to check.
    * @return True if the number is prime, false otherwise.
    */
