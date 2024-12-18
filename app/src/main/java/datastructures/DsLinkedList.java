@@ -1,4 +1,6 @@
 package datastructures;
+import java.util.ArrayList;
+import java.util.Collections;
 
 import java.util.LinkedList;
 
@@ -10,14 +12,9 @@ public class DsLinkedList {
    * @return the shuffled linked list
    */
   public static LinkedList<Integer> shuffle(LinkedList<Integer> l) {
-    LinkedList<Integer> tmp = new LinkedList<Integer>(l);
-    LinkedList<Integer> ret = new LinkedList<Integer>();
-    while (tmp.size() > 0) {
-      int index = (int) (Math.random() * tmp.size());
-      ret.add(tmp.get(index));
-      tmp.remove(index);
-    }
-    return ret;
+    ArrayList<Integer> tmp = new ArrayList<>(l);
+    Collections.shuffle(tmp);
+    return new LinkedList<>(tmp);
   }
 
   /**
@@ -30,10 +27,6 @@ public class DsLinkedList {
    */
   public static LinkedList<Integer> slice(LinkedList<Integer> l, int start,
       int end) {
-    LinkedList<Integer> ret = new LinkedList<Integer>();
-    for (int i = start; i < end; i++) {
-      ret.add(l.get(i));
-    }
-    return ret;
+    return new LinkedList<>(l.subList(start, end));
   }
 }

@@ -12,8 +12,8 @@ public class Primes {
     if (n < 2) {
       return false;
     }
-    for (int i = 2; i < n; i++) {
-      if (n % i == 0 && i != n) {
+    for (int i = 2; i * i <= n; i++) { // Optimized loop condition
+      if (n % i == 0) {
         return false;
       }
     }
@@ -45,10 +45,14 @@ public class Primes {
   public static Vector<Integer> PrimeFactors(int n) {
     Vector<Integer> ret = new Vector<Integer>();
 
-    for (int i = 2; i < n; i++) {
-      if (n % i == 0 && IsPrime(i)) {
+    for (int i = 2; i * i <= n; i++) { // Optimized loop condition
+      while (n % i == 0 && IsPrime(i)) { // Optimized to handle repeated factors
         ret.add(i);
+        n /= i; // Reduce n to avoid redundant checks.
       }
+    }
+    if (n > 1) { // Add any remaining prime factor.
+        ret.add(n);
     }
     return ret;
   }

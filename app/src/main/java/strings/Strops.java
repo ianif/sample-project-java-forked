@@ -8,11 +8,11 @@ public class Strops {
    * @return The reversed string.
    */
   public String reverse(String str) {
-    String reversed = "";
+    StringBuilder reversed = new StringBuilder();
     for (int i = str.length() - 1; i >= 0; i--) {
-      reversed += str.charAt(i);
+      reversed.append(str.charAt(i));
     }
-    return reversed;
+    return reversed.toString();
   }
 
   /**
@@ -26,10 +26,14 @@ public class Strops {
       return false;
     }
 
-    for (int i = 0; i < str.length(); i++) {
-      if (str.charAt(i) != str.charAt(str.length() - 1 - i)) {
+    int left = 0;
+    int right = str.length() - 1;
+    while (left < right) {
+      if (str.charAt(left) != str.charAt(right)) {
         return false;
       }
+      left++;
+      right--;
     }
 
     return true;
