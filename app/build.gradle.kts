@@ -41,3 +41,67 @@ tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
 }
+
+/**
+ * Guardrail: `bad-examples/` is a fixture corpus of intentionally invalid Java code.
+ * It must never be part of any Gradle source set (java or resources), otherwise builds/tests will fail.
+ */
+val verifyBadExamplesNotInSourceSets = tasks.register("verifyBadExamplesNotInSourceSets") {
+    group = "verification"
+    description = "Fails if any Gradle source set includes the top-level bad-examples/ directory."
+
+    doLast {
+        val badExamplesDir = rootProject.file("bad-examples").canonicalFile
+
+        fun File.isSameOrParentOf(other: File): Boolean {
+            val parentPath = this.toPath().normalize()
+            val otherPath = other.toPath().normalize()
+            return otherPath == parentPath || otherPath.startsWith(parentPath)
+        }
+
+        // Only fail if `bad-examples/` exists and is actually included in any source set.
+        if (!badExamplesDir.exists()) return@doLast
+
+        val sourceSets = extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
+        val violations = mutableListOf<String>()
+
+        sourceSets.forEach { ss ->
+            val offending = linkedSetOf<File>()
+
+            ss.allJava.srcDirs.forEach { dir ->
+                val canonical = dir.canonicalFile
+                if (canonical.isSameOrParentOf(badExamplesDir) || badExamplesDir.isSameOrParentOf(canonical)) {
+                    offending += canonical
+                }
+            }
+
+            ss.resources.srcDirs.forEach { dir ->
+                val canonical = dir.canonicalFile
+                if (canonical.isSameOrParentOf(badExamplesDir) || badExamplesDir.isSameOrParentOf(canonical)) {
+                    offending += canonical
+                }
+            }
+
+            if (offending.isNotEmpty()) {
+                val offendingPretty = offending.joinToString(", ") { it.invariantSeparatorsPath }
+                violations += "- sourceSet '${ss.name}' includes: $offendingPretty"
+            }
+        }
+
+        if (violations.isNotEmpty()) {
+            throw GradleException(
+                buildString {
+                    appendLine("Invalid Gradle source set configuration: 'bad-examples/' must not be included in any source set.")
+                    appendLine("Detected the following source set(s)/directory(ies):")
+                    violations.forEach { appendLine(it) }
+                    appendLine()
+                    appendLine("Remediation: remove 'bad-examples' (and any parent directory that contains it) from sourceSets.*.java.srcDirs and sourceSets.*.resources.srcDirs.")
+                }
+            )
+        }
+    }
+}
+
+tasks.named("check") {
+    dependsOn(verifyBadExamplesNotInSourceSets)
+}
