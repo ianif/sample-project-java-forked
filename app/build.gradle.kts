@@ -62,7 +62,7 @@ val verifyBadExamplesNotInSourceSets = tasks.register("verifyBadExamplesNotInSou
         // Only fail if `bad-examples/` exists and is actually included in any source set.
         if (!badExamplesDir.exists()) return@doLast
 
-        val sourceSets = extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
+        val sourceSets = project.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
         val violations = mutableListOf<String>()
 
         sourceSets.forEach { ss ->
