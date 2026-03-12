@@ -7,14 +7,10 @@ public class Double {
    * @param n The number of natural numbers to sum.
    * @return The sum of the first n natural numbers squared.
    */
-  public static int sumSquare(int n) {
+public static int sumSquare(int n) {
     int sum = 0;
     for (int i = 0; i < n; i++) {
-      for (int j = 0; j < n; j++) {
-        if (i == j) {
-          sum = sum + i * j;
-        }
-      }
+      sum = sum + i * i;
     }
     return sum;
   }

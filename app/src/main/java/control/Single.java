@@ -11,12 +11,8 @@ public class Single {
    * @return The sum of the first n natural numbers.
    */
   public static int sumRange(int n) {
-    int[] arr = new int[n];
     int sum = 0;
     for (int i = 0; i < n; i++) {
-      arr[i] = i;
-    }
-    for (int i : arr) {
       sum += i;
     }
     return sum;
