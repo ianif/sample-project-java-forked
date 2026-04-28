@@ -5,6 +5,10 @@ This is a sample project for showcasing how optimization can be performed in a J
 
 For intentionally invalid Java fixtures used as a parser/linter testbed (excluded from Gradle compilation), see [`bad-examples/README.md`](bad-examples/README.md).
 
+## Notes
+
+Additional maintenance notes are available in [`NOTES.md`](NOTES.md).
+
 ## Usage
 
 Build:
