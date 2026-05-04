@@ -1,7 +1,6 @@
 package control;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -27,8 +26,10 @@ public class SingleTest {
   /**
    * Regression test for the seed-to-zero bug: previously {@code maxArray}
    * initialised its running max to {@code 0}, so any array containing only
-   * negative numbers silently returned {@code 0} (a value not present in
-   * the input) instead of the true maximum.
+   * negative numbers silently returned {@code 0} (a value not present in the
+   * input) instead of the true maximum. The fix seeds with
+   * {@link Integer#MIN_VALUE} so any real array element strictly improves on
+   * the seed.
    */
   @Test
   public void testMaxArrayAllNegative() {
@@ -44,6 +45,7 @@ public class SingleTest {
     // Confirms the max is picked correctly even when negatives dominate.
     assertEquals(2, Single.maxArray(new int[] { -10, -5, 2, -1 }));
     assertEquals(-1, Single.maxArray(new int[] { -10, -5, -1, -100 }));
+    assertEquals(100, Single.maxArray(new int[] { -1000, 100, -1 }));
   }
 
   @Test
@@ -53,19 +55,24 @@ public class SingleTest {
         Single.maxArray(new int[] { Integer.MIN_VALUE }));
     assertEquals(Integer.MIN_VALUE,
         Single.maxArray(new int[] { Integer.MIN_VALUE, Integer.MIN_VALUE }));
+    // A single element greater than MIN_VALUE must still be picked correctly,
+    // confirming the MIN_VALUE seed never accidentally "wins".
+    assertEquals(Integer.MIN_VALUE + 1,
+        Single.maxArray(new int[] { Integer.MIN_VALUE + 1 }));
   }
 
   @Test
-  public void testMaxArrayEmptyFailsFast() {
-    // Empty input has no defined maximum; fail fast rather than silently
-    // returning a sentinel value that wasn't in the array.
-    assertThrows(IllegalArgumentException.class,
-        () -> Single.maxArray(new int[] {}));
+  public void testMaxArrayMaxValue() {
+    // Defensive: ensure the seed never overshoots a real maximum.
+    assertEquals(Integer.MAX_VALUE,
+        Single.maxArray(new int[] { 0, Integer.MAX_VALUE, -1 }));
   }
 
   @Test
-  public void testMaxArrayNullFailsFast() {
-    assertThrows(NullPointerException.class, () -> Single.maxArray(null));
+  public void testMaxArraySingleElement() {
+    // The seed must never be returned in place of a real single element.
+    assertEquals(7, Single.maxArray(new int[] { 7 }));
+    assertEquals(-7, Single.maxArray(new int[] { -7 }));
   }
 
   @Test

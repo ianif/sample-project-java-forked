@@ -21,29 +21,23 @@ public class Single {
   /**
    * This method calculates the maximum value in an array of integers.
    *
-   * @param arr The array of integers. Must be non-null and non-empty.
-   * @return The maximum value in the array.
-   * @throws NullPointerException     if {@code arr} is null.
-   * @throws IllegalArgumentException if {@code arr} is empty.
+   * <p><b>Bug history:</b> earlier revisions seeded the running maximum with
+   * {@code 0}, which silently returned {@code 0} for any all-negative input
+   * (e.g. {@code maxArray(new int[]{-3,-2,-1})} returned {@code 0} instead of
+   * {@code -1} — a value not even present in the input array). The fix is to
+   * seed the running maximum with {@link Integer#MIN_VALUE} so every real
+   * array element strictly improves on the seed.
+   *
+   * @param arr The array of integers.
+   * @return The maximum value in the array, or {@link Integer#MIN_VALUE} if
+   *         {@code arr} is empty.
+   * @throws NullPointerException if {@code arr} is null.
    */
   public static int maxArray(int[] arr) {
-    // Bug fix: previously seeded the running max with 0, which silently
-    // returned 0 for any all-negative input (e.g. maxArray([-3,-2,-1])
-    // returned 0 instead of -1 — a value not present in the array).
-    // Seed from the first element instead, so all subsequent values
-    // (including negatives) are compared against a real array element.
-    // Empty input now fails fast rather than returning a meaningless 0.
-    if (arr == null) {
-      throw new NullPointerException("arr must not be null");
-    }
-    if (arr.length == 0) {
-      throw new IllegalArgumentException(
-          "maxArray requires a non-empty array");
-    }
-    int max = arr[0];
-    for (int idx = 1; idx < arr.length; idx++) {
-      if (arr[idx] > max) {
-        max = arr[idx];
+    int max = Integer.MIN_VALUE;
+    for (int i : arr) {
+      if (i > max) {
+        max = i;
       }
     }
     return max;
